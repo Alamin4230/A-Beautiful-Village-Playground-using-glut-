@@ -1,0 +1,169 @@
+
+#include <GL/glut.h>
+#include <math.h>
+
+// Function to draw a circle
+void drawCircle(float cx, float cy, float r, int num_segments)
+{
+    glBegin(GL_TRIANGLE_FAN);
+    for (int i = 0; i <= num_segments; i++)
+    {
+        float theta = 2.0f * M_PI * float(i) / float(num_segments);
+        float x = r * cosf(theta);
+        float y = r * sinf(theta);
+        glVertex2f(x + cx, y + cy);
+    }
+    glEnd();
+}
+
+// Function to draw the sun
+void drawSun()
+{
+    glColor3f(1.0, 1.0, 0.0); // Yellow color
+    drawCircle(800, 800, 100, 100); // Scaled for pixels
+}
+
+// Function to draw a cloud
+void drawCloud(float x, float y)
+{
+    glColor3f(1.0, 1.0, 1.0); // White color
+    drawCircle(x, y, 100, 50);
+    drawCircle(x + 100, y + 50, 80, 50);
+    drawCircle(x - 100, y + 50, 80, 50);
+}
+
+// Function to draw a tree
+void drawTree(float x, float y)
+{
+    // Draw trunk
+    glColor3f(0.55, 0.27, 0.07); // Brown color
+    glBegin(GL_QUADS);
+    glVertex2f(x - 20, y);
+    glVertex2f(x + 20, y);
+    glVertex2f(x + 20, y + 200);
+    glVertex2f(x - 20, y + 200);
+    glEnd();
+
+    // Draw foliage
+    glColor3f(0.0, 0.5, 0.0); // Green color
+    drawCircle(x, y + 250, 100, 50);
+    drawCircle(x - 50, y + 200, 80, 50);
+    drawCircle(x + 50, y + 200, 80, 50);
+}
+
+// Function to draw the river
+void drawRiver()
+{
+    glColor3f(0.0, 0.5, 1.0); // Blue color
+    glBegin(GL_POLYGON);
+    glVertex2f(0, 400);
+    glVertex2f(1080, 400);
+    glVertex2f(1080, 200);
+    glVertex2f(0, 200);
+    glEnd();
+}
+// Function to draw a boat
+void drawBoat(float x, float y)
+{
+    glColor3f(0.5, 0.25, 0.0); // Brown color
+    glBegin(GL_POLYGON);
+    glVertex2f(x - 100, y);
+    glVertex2f(x + 100, y);
+    glVertex2f(x + 80, y - 50);
+    glVertex2f(x - 80, y - 50);
+    glEnd();
+
+    // Draw the sail
+    glColor3f(1.0, 1.0, 1.0); // White color
+    glBegin(GL_TRIANGLES);
+    glVertex2f(x, y);
+    glVertex2f(x, y + 100);
+    glVertex2f(x + 50, y);
+    glEnd();
+}
+
+// Function to draw the playground (quarter-circle)
+void drawPlayground(float centerX, float centerY, float radius)
+{
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex2f(centerX, centerY); // Center of the circle
+
+    // Generate points for the left quarter-circle (π/2 to π)
+    for (float angle = 3.14159f / 2; angle <= 3.14159f; angle += 0.01f)
+    {
+        float x = centerX + radius * cos(angle);
+        float y = centerY + radius * sin(angle);
+        glVertex2f(x, y);
+    }
+    glEnd();
+}
+
+// Function to draw birds
+void drawBird(float x, float y)
+{
+    glColor3f(0.0, 0.0, 0.0); // Black color
+    glBegin(GL_LINES);
+    glVertex2f(x, y);
+    glVertex2f(x + 50, y + 30);
+    glVertex2f(x + 50, y + 30);
+    glVertex2f(x + 100, y);
+    glEnd();
+}
+
+void display()
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    // Draw sky
+    glColor3f(0.53, 0.81, 0.98); // Sky blue color
+    glBegin(GL_POLYGON);
+    glVertex2f(0, 540); // Adjusted to match pixel coordinates
+    glVertex2f(1080, 540);
+    glVertex2f(1080, 1080);
+    glVertex2f(0, 1080);
+    glEnd();
+
+    drawSun();
+    drawCloud(200, 800);
+    drawCloud(540, 900);
+    drawCloud(900, 800);
+    drawTree(200, 300);
+    drawTree(500, 200);
+
+    glPushMatrix();
+    glScalef(1.5, 1.0, 1.0); // Adjusted scaling
+    drawPlayground(540, 200, 200);
+    glPopMatrix();
+
+    /*drawRiver();
+    drawBoat(300, 300);
+    drawBoat(540, 200);
+    drawBoat(780, 300);
+    drawBird(200, 1000);
+    drawBird(400, 950);
+    drawBird(800, 1000);
+    */
+
+    glFlush();
+
+}
+
+void init()
+{
+    glClearColor(1.0, 1.0, 1.0, 1.0); // White background
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(0, 1080, 0, 1080); // Set up pixel coordinates
+}
+
+int main(int argc, char** argv)
+{
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitWindowSize(1080, 1080); // Matches pixel resolution
+    glutCreateWindow("Beautiful Village Playground");
+    init();
+    glutDisplayFunc(display);
+    glutMainLoop();
+    return 0;
+}
